@@ -3,13 +3,17 @@ module RemoteFactoryGirlHomeRails
 
     skip_before_filter *RemoteFactoryGirlHomeRails.skip_before_filter
     
-    def create 
+    def create
       if RemoteFactoryGirlHomeRails.enabled?
-        factory = FactoryGirl.create(factory(params), attributes(params))
-        render json: factory
+        begin
+          factory = FactoryGirl.create(factory(params), attributes(params))
+          render json: factory
+        rescue ActiveRecord::RecordInvalid => invalid
+          return render json: {errors: [{factory: factory(params), message: invalid.message}] }, status: 422
+        end
       else
         forbidden = 403
-        render json: { status: forbidden }, status: forbidden 
+        render json: { status: forbidden }, status: forbidden
       end
     end
 
