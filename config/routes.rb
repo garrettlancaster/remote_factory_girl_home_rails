@@ -1,3 +1,5 @@
 RemoteFactoryGirlHomeRails::Engine.routes.draw do
-  resources :home, only: [:create, :index]
+  resources :factory, only: [:create, :index] do
+    post 'attributes_for', on: :collection
+  end
 end
